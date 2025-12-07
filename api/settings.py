@@ -10,11 +10,41 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-# import os
+
 from pathlib import Path
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# === TEMPLATES: ONLY use root templates folder (ignores app folders) ===
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],   # ← ONLY this folder
+        'APP_DIRS': False,                  # ← THIS IS THE KILL SWITCH (turns off app templates)
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# === STATIC FILES: ONLY use root static folder ===
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']        # ← your root static folder
+STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+
+
+
+# import os
+# from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -53,21 +83,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#             ],
+#         },
+#     },
+# ]
 
 WSGI_APPLICATION = 'api.wsgi.app'
 
@@ -138,13 +168,13 @@ USE_TZ = True
 #     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
-import os
+# import os
 
 
-# STATIC FILES – correct for your current setup
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']                  # ← root static folder
-STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'   # ← keep your path (Vercel will use it if needed)
+# # STATIC FILES – correct for your current setup
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [BASE_DIR / 'static']                  # ← root static folder
+# STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'   # ← keep your path (Vercel will use it if needed)
 
 
 # import os

@@ -140,9 +140,18 @@ USE_TZ = True
 
 import os
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
+# STATIC FILES – correct for your current setup
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']                  # ← root static folder
+STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'   # ← keep your path (Vercel will use it if needed)
+
+
+# import os
+
+# STATIC_URL = 'static/'
+# STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 
 

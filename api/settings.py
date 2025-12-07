@@ -122,7 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'example/static',  # Add your static files directory here
+    BASE_DIR / '/static',  # Add your static files directory here
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # For collectstatic

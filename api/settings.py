@@ -119,14 +119,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / '/static',  # Add your static files directory here
+# ]
+# STATIC_ROOT = BASE_DIR / "staticfiles"  # For collectstatic
+
+
+
+# This makes Django find your CSS/JS/images in development AND on Vercel
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]          # ← your static folder
+STATIC_ROOT = BASE_DIR / "staticfiles"            # ← Vercel collects here
 
-STATICFILES_DIRS = [
-    BASE_DIR / '/static',  # Add your static files directory here
-]
-
-STATIC_ROOT = BASE_DIR / "staticfiles"  # For collectstatic
-
+# This serves static files correctly on Vercel
+if os.environ.get('VERCEL'):
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

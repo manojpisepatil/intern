@@ -2,8 +2,8 @@
 from django.urls import path
 from example.views import index
 
-from example.views import contact_view 
-from example.views import index_view
+# from example.views import contact_view 
+# from example.views import index_view
 
 
 urlpatterns = [

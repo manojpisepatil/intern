@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-import os
+# import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,14 +130,19 @@ USE_TZ = True
 
 
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "example" / "static"]
-# STATIC_ROOT = BASE_DIR / "staticfiles"
-# This serves static files correctly on Vercel
-if os.environ.get('VERCEL'):
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [BASE_DIR / "example" / "static"]
+# # STATIC_ROOT = BASE_DIR / "staticfiles"
+# # This serves static files correctly on Vercel
+# if os.environ.get('VERCEL'):
+#     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
+import os
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 
 

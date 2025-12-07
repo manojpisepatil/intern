@@ -127,14 +127,20 @@ USE_TZ = True
 
 
 
+
+
+
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "example" / "static",   # ← this is the key line for your structure
-]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "example" / "static"]
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 # This serves static files correctly on Vercel
 if os.environ.get('VERCEL'):
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+
+
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

@@ -34,11 +34,14 @@ TEMPLATES = [
 ]
 
 # === STATIC FILES: ONLY use root static folder ===
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [BASE_DIR / 'static']        # ← your root static folder
+# STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+
+
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']        # ← your root static folder
-STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
-
-
+STATICFILES_DIRS = [BASE_DIR / "static"]        # ← one line, no comma, no os.path
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 
 # import os
 # from pathlib import Path

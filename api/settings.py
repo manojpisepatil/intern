@@ -127,11 +127,11 @@ USE_TZ = True
 
 
 
-# This makes Django find your CSS/JS/images in development AND on Vercel
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]          # ← your static folder
-STATIC_ROOT = BASE_DIR / "staticfiles"            # ← Vercel collects here
-
+STATICFILES_DIRS = [
+    BASE_DIR / "example" / "static",   # ← this is the key line for your structure
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # This serves static files correctly on Vercel
 if os.environ.get('VERCEL'):
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

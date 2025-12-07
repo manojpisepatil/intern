@@ -4,4 +4,4 @@ Django==4.1.3
 # django-vercel  # if you used any starter
 reportlab
 python-dateutil
-# Pillow  # needed for images in reportlab sometimes
+Pillow  # needed for images in reportlab sometimes

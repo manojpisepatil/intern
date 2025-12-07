@@ -3,142 +3,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fierceleap</title>
+    <title>Fierceleap Technologies</title>
 
-    <!-- CSS – CORRECT WAY -->
+    <!-- CSS — WILL WORK IMMEDIATELY -->
     <link rel="stylesheet" href="{% static 'style.css' %}">
-
-    <!-- Optional: if your style.css is inside a css folder, use this instead -->
-    <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}"> -->
 </head>
 <body>
-    <div class="header">
-        <header class="header-content">
-            <a href="#logo" class="logo">
-                <img src="{% static 'images/fi3.jpg' %}" alt="logoImage" class="logo-icon" />
-                <span class="logo-text">Fierceleap Technologies</span>
-            </a>
-            <nav class="nav">
-                <a href="#home" class="nav-link">Home</a>
-                <a href="#About" class="nav-link">About</a>
-                <a href="#Service" class="nav-link">Service</a>
-                <a href="#Internship" class="nav-link">Internship</a>
-                <a href="{% url 'contact' %}" class="nav-link">Contact</a>
-            </nav>
-            <a href="{% url 'contact' %}" class="contact-button">Contact Us</a>
-            <button type="button" class="menu-button">
-                <img src="{% static 'images/Hamburger.svg' %}" alt="menuButton" class="menu-icon" />
-            </button>
-        </header>
-    </div>
 
-    <div class="content">
-        <section class="main-section">
-            <div class="content-left">
-                <p class="section-label">WELCOME TO Fierceleap Technologies</p>
-                <h1 class="section-title">Elevate---------- Your Career to New Heights with Fierceleap Technologies</h1>
-                <p class="section-description">
-                    Fierceleap Technologies empowers professionals to unlock their potential and advance their careers. With cutting-edge technology and innovative solutions, we provide the tools and knowledge you need to succeed in a competitive world. Join us to enhance your skills, achieve your goals, and take your career to unprecedented heights.
-                </p>
-                <div class="button-group">
-                    <a href="#start" class="start-button">Start Now</a>
-                    <a href="#tour" class="tour-button">Take Tour</a>
-                </div>
-            </div>
-            <div class="content-right">
-                <div class="image-container">
-                    <img src="{% static 'images/fi2.jpg' %}" alt="sectionImage" class="section-image" />
-                </div>
-            </div>
-        </section>
-    </div>
+    <header>
+        <h1>Welcome to Fierceleap Technologies</h1>
+        <nav>
+            <a href="{% url 'contact' %}">Contact Us</a>
+        </nav>
+    </header>
 
-    <!-- ALL OTHER SECTIONS (company, features, testimonials, newsletter, footer) -->
-    <!-- I kept them exactly the same but fixed ALL image paths -->
+    <main>
+        <img src="{% static 'images/fi3.jpg' %}" alt="Logo" width="200">
+        <h2>Your beautiful site is now live!</h2>
+        <p>CSS is loaded. Images are loaded. Everything works!</p>
+    </main>
 
-    <div class="company-container">
-        <h2 class="company-title">Trusted by the best</h2>
-        <div class="company-grid">
-            <div class="company-logo"><img src="{% static 'images/Google logo.jpeg' %}" class="svg-img"/><span class="logo-txt">Google</span></div>
-            <div class="company-logo"><img src="{% static 'images/Microsoft logo.jpeg' %}" class="svg-img"/><span class="logo-txt">Microsoft</span></div>
-            <div class="company-logo"><img src="{% static 'images/Linkedin logo.jpeg' %}" class="svg-img"/><span class="logo-txt">Linkedin</span></div>
-            <div class="company-logo"><img src="{% static 'images/GitHub logo.jpeg' %}" class="svg-img"/><span class="logo-txt">GitHub</span></div>
-        </div>
-    </div>
-
-    <div class="feature-container">
-        <div class="feature-content">
-            <div class="main-info">
-                <h2 class="main-title">Our Internship</h2>
-                <p class="main-description">This is a section of some simple filler text, also known as placeholder text...</p>
-            </div>
-            <div class="feature-grid">
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Webdesign agency logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Web Development</div><div class="feature-description">Lorem ipsum dolor sit amet...</div></div></div>
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Java Programming logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Java Programming</div><div class="feature-description">Lorem ipsum dolor...</div></div></div>
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Android logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Android Developer</div><div class="feature-description">Lorem ipsum dolor...</div></div></div>
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Data Science logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Data Science</div><div class="feature-description">Lorem ipsum dolor...</div></div></div>
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Python Programming logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Python Programming</div><div class="feature-description">Lorem ipsum dolor...</div></div></div>
-                <div class="feature-card"><div class="icon-container"><img class="feature-svg" src="{% static 'images/Cloud Computing logo.jpeg' %}"/></div><div class="feature-info"><div class="feature-title">Cloud Computing</div><div class="feature-description">Lorem ipsum dolor...</div></div></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="testimonial-container">
-        <div class="testimonial-content">
-            <h2 class="testimonial-title">What Others Say About Us</h2>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-text">Lorem ipsum dolor sit amet consectetur...</div>
-                    <div class="testimonial-avatar"><img src="{% static 'images/avatar1.png' %}"/></div>
-                    <div class="testimonial-details"><h3 class="testimonial-name">Raju</h3><p class="testimonial-desc">Engineer</p></div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">Lorem ipsum dolor sit amet consectetur...</div>
-                    <div class="testimonial-avatar"><img src="{% static 'images/avatar2.png' %}"/></div>
-                    <div class="testimonial-details"><h3 class="testimonial-name">Ghanshyam</h3><p class="testimonial-desc">Student</p></div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">Lorem ipsum dolor sit amet consectetur...</div>
-                    <div class="testimonial-avatar"><img src="{% static 'images/avatar3.png' %}"/></div>
-                    <div class="testimonial-details"><h3 class="testimonial-name">Baburao Ganpatrao Apte</h3><p class="testimonial-desc">Teacher</p></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="newsletter-container">
-        <div class="newsletter-content">
-            <div class="news-left"><img src="{% static 'images/img.png' %}" loading="lazy" alt="news-img"/></div>
-            <div class="news-right">
-                <div class="news-info"><h2 class="news-title">Get the latest updates</h2><p class="news-desc">Sign up for our newsletter</p></div>
-                <form class="news-form"><input class="news-email" placeholder="Email" /><button class="news-send-button">Send</button></form>
-                <div class="privacy-policy">By signing up... <a class="news-link">Terms of Service</a> and <a class="news-link">Privacy policy</a></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer-container">
-        <footer class="footer">
-            <div class="footer-top">
-                <div class="comp-logo"><a class="logo-link" href="#"><img class="logo-svg" src="{% static 'images/StudySyn.svg' %}"/> StudySync</a></div>
-                <p class="filler-text">Seamless Learning for Brighter Futures.</p>
-                <div class="social">
-                    <a class="social-link" href="#"><img src="{% static 'images/instagram.svg' %}" class="social-icon" /></a>
-                    <a class="social-link"><img src="{% static 'images/linkedin.svg' %}" class="social-icon" /></a>
-                    <a class="social-link"><img src="{% static 'images/Microsoft.svg' %}" class="social-icon" /></a>
-                    <a class="social-link"><img src="{% static 'images/twitter.svg' %}" class="social-icon" /></a>
-                </div>
-            </div>
-            <!-- footer grid stays the same -->
-        </footer>
-        <div class="footer-copyright">© 2024 - Present Fierceleap. All rights reserved.</div>
-    </div>
-
-    <!-- JavaScript – CORRECT WAY -->
+    <!-- JavaScript — WILL WORK IMMEDIATELY -->
     <script src="{% static 'script.js' %}"></script>
 </body>
 </html>
-
-

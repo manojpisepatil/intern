@@ -4,20 +4,16 @@ Django settings for api project.
 
 from pathlib import Path
 import os
+import dj_database_url
 
-# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-=cldztbc4jg&xl0!x673!*v2_=p$$eu)=7*f#d0#zs$44xx-h^'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app']
 
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,7 +36,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api.urls'
 
-# Templates - using only root templates folder
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,12 +54,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api.wsgi.app'
 
-
-# ===================== DATABASE (STATIC - Hard-coded for Neon) =====================
-
-import dj_database_url
-
-# ===================== DATABASE (Vercel + Neon Integration) =====================
+# ============ DATABASE (Vercel + Neon Integration) ============
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
@@ -72,14 +62,8 @@ DATABASES = {
         ssl_require=True,
     )
 }
+# ==============================================================
 
-# =================================================================================
-# ==================================================================================================
-
-# =================================================================================
-
-
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -87,25 +71,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 
-
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# ===================== EMAIL CONFIGURATION (STATIC) =====================
+# ============ EMAIL ============
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -113,4 +90,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'manojrajendrapise@gmail.com'
 EMAIL_HOST_PASSWORD = 'abwe evcs rqcf qnqf'  # Your Gmail App Password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-# =======================================================================
+# ===============================

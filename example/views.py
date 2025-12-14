@@ -16,6 +16,16 @@ import os
 from .forms import ContactForm
 from .models import ScheduledEmail
 
+# =============================================
+
+from django.http import HttpResponse
+from django.db import connection
+
+def db_test(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+    return HttpResponse("DB CONNECTED ✅")
+
 
 # ================= HOME PAGE =================
 def index_view(request):

@@ -12,7 +12,7 @@
 from django.urls import path
 from example.views import index_view, contact_view
 from .views import send_scheduled_emails
-
+from example.views import db_test
 
 urlpatterns = [
     path('', index_view, name='index'),

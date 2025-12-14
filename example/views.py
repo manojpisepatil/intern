@@ -1,205 +1,135 @@
-# # example/views.py
-# from datetime import datetime
-
-# from django.http import HttpResponse
-
-# def index(request):
-#     now = datetime.now()
-#     html = f'''
-#     <html>
-#         <body>
-#             <h1>Hello from Vercel to manoj 2211 !</h1>
-#             <p>The current time is { now }.</p>
-#         </body>
-#     </html>
-#     '''
-#     return HttpResponse(html)
-
-
-
-
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from django.core.mail import EmailMessage
+from django.conf import settings
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from io import BytesIO
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from .forms import ContactForm
 
+from io import BytesIO
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+
+from .forms import ContactForm
+from .models import ScheduledEmail
 
 
 def index_view(request):
-    """
-    Renders the home page with index.html.
-    """
     return render(request, 'index.html')
 
 
-
 def contact_view(request):
-    """
-    Handles the contact form submission, processes user data, generates a personalized internship offer letter as a PDF,
-    and emails it to the candidate with detailed content.
-    """
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Retrieve form data
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             domain = form.cleaned_data['domain']
 
-            # Define domain-specific details
             domain_details = {
                 'digital_marketing': {
                     'title': 'Digital Marketing Intern',
-                    'responsibilities': (
-                        'collaborating with the marketing team to devise innovative and data-driven social media strategies, '
-                        'overseeing the implementation of email marketing campaigns, and providing regular performance reports. '
-                        'You will also contribute to brainstorming creative content ideas for engagement across different platforms.'
-                    ),
+                    'responsibilities': 'Working with marketing campaigns, social media strategies, email marketing, and performance analysis.',
                 },
                 'web_development': {
                     'title': 'Web Development Intern',
-                    'responsibilities': (
-                        'working on the development and maintenance of user-friendly, visually appealing, and functional websites. '
-                        'You will focus on optimizing websites for speed and performance, implementing responsive designs, '
-                        'and collaborating with backend developers to ensure seamless integration of various systems.'
-                    ),
+                    'responsibilities': 'Developing responsive websites, improving performance, and collaborating with backend developers.',
                 },
                 'data_analysis': {
                     'title': 'Data Analysis Intern',
-                    'responsibilities': (
-                        'analyzing large and complex datasets to identify trends, patterns, and insights that can guide strategic decisions. '
-                        'Your work will involve preparing detailed reports, creating interactive dashboards, and presenting findings '
-                        'in a clear and compelling manner to stakeholders.'
-                    ),
+                    'responsibilities': 'Analyzing datasets, preparing reports, and creating dashboards.',
                 },
             }
+
             selected_domain = domain_details[domain]
 
-            # Calculate dates
-            today = datetime.today()
-            start_date = (today + relativedelta(months=1)).replace(day=1)  # First day of next month
-            end_date = start_date + relativedelta(months=1) - relativedelta(days=1)  # 1-month duration
-            start_date_str = start_date.strftime('%d %B %Y')
-            end_date_str = end_date.strftime('%d %B %Y')
+            today = timezone.now()
+            start_date = (today + relativedelta(months=1)).replace(day=1)
+            end_date = start_date + relativedelta(months=1) - relativedelta(days=1)
 
-            # Email body
             email_body = f"""
 Company Letterhead
 
-Welcome to the FierceLeap Technologies Internship Program.
+Congratulations {name} 🎉
 
-Date: {today.strftime('%d %B %Y')}
+You have been selected for the position of {selected_domain['title']}.
 
-🎉 Congratulations,  {name}! 🎉
+Internship Duration:
+Start Date: {start_date.strftime('%d %B %Y')}
+End Date: {end_date.strftime('%d %B %Y')}
 
-Dear {name},
+Mode: Remote
+Type: Unpaid Internship
 
-We are delighted to inform you that you have been selected for the {selected_domain['title']} position. 
-We were highly impressed by your qualifications and enthusiasm to learn during the selection process, and we are excited to welcome you to our team.
+Responsibilities:
+{selected_domain['responsibilities']}
 
-Your internship will commence on {start_date_str} and will continue until {end_date_str}.
-This is an unpaid internship. 
-Your work will be conducted remotely.
-
-During your internship, your responsibilities will include {selected_domain['responsibilities']}.
-You will work under the supervision of FierceLeap Technologies, who will guide, mentor, and support you throughout your internship.
-
-Please note that this offer letter does not guarantee full-time employment with the company. 
-However, based on your performance, you may receive a pre-placement offer.
-
-If you have any questions, feel free to contact us at FierceLeapTechnologies@gmail.com.
-
-Sincerely,
-
+Regards,
 FierceLeap Technologies
-
 """
 
-            # Generate PDF
             buffer = BytesIO()
             p = canvas.Canvas(buffer, pagesize=letter)
-
-            # Header: Add company logo
-            logo_path = "tezoraa.jpg"  # Replace with the actual path to your logo
-            try:
-                p.drawImage(logo_path, inch, 10.5 * inch, width=2 * inch, height=1 * inch)
-            except Exception:
-                p.setFont("Helvetica-Bold", 14)
-                p.drawString(inch, 10.5 * inch, "FierceLeap Technologies")
-
-            # Title
             p.setFont("Helvetica-Bold", 16)
-            p.drawString(2.5 * inch, 10.25 * inch, "INTERNSHIP OFFER LETTER")
-
-            # Main content
-            p.setFont("Helvetica", 10)
-            y_position = 9.75 * inch
-            content_lines = [
-                f"Date: {today.strftime('%d/%m/%Y')} | ID: CS{today.strftime('%y%m%d')}{name[:2].upper()}",
-                "",
-                f"Dear {name},",
-                "",
-                f"We are excited to extend an offer for the position of {selected_domain['title']} at FierceLeap Technologies. "
-                "This internship is designed to provide you with an enriching and transformative experience that will help you "
-                "develop practical skills, build professional relationships, and advance your career aspirations.",
-                "",
-                f"The internship will begin on {start_date_str} and conclude on {end_date_str}, spanning a duration of one month.",
-                "",
-                "Key Responsibilities:",
-                f"{selected_domain['responsibilities']}",
-                "",
-                "Throughout your internship, you will work closely with experienced mentors and team members who will guide you in "
-                "navigating the challenges and seizing the opportunities presented by your role. We aim to create an environment that fosters "
-                "collaboration, innovation, and continuous learning.",
-                "",
-                "Please note that this is an unpaid internship, and your work will be conducted remotely. It is essential that you have a laptop "
-                "available for your daily tasks during the internship period.",
-                "",
-                "This offer letter does not guarantee full-time employment with FierceLeap Technologies; however, exceptional performance during your "
-                "internship may result in a pre-placement offer for a future role within our organization.",
-                "",
-                "We are delighted to have you on board and are confident that you will make the most of this opportunity.",
-                "",
-                "Warm regards,",
-                "",
-                "FierceLeap Technologies",
-            ]
-
-            for line in content_lines:
-                p.drawString(inch, y_position, line.strip())
-                y_position -= 0.3 * inch
-
-            # Footer: Add branding image
-            footer_image_path = "footer_image.jpg"  # Replace with the actual path to your footer image
-            try:
-                p.drawImage(footer_image_path, inch, 0.5 * inch, width=5.5 * inch, height=1.5 * inch)
-            except Exception:
-                p.setFont("Helvetica", 10)
-                p.drawString(inch, 0.5 * inch, "FierceLeap Technologies - Shaping Future Leaders")
-
-            # Finalize PDF
+            p.drawString(100, 750, "INTERNSHIP OFFER LETTER")
+            p.setFont("Helvetica", 11)
+            p.drawString(100, 710, f"Candidate Name: {name}")
+            p.drawString(100, 690, f"Position: {selected_domain['title']}")
+            p.drawString(100, 670, f"Start Date: {start_date.strftime('%d %B %Y')}")
+            p.drawString(100, 650, f"End Date: {end_date.strftime('%d %B %Y')}")
+            p.drawString(100, 620, "Congratulations! We are happy to have you onboard.")
             p.showPage()
             p.save()
             buffer.seek(0)
 
-            # Send Email
-            mail = EmailMessage(
+            send_time = today + timedelta(days=15)
+
+            ScheduledEmail.objects.create(
+                name=name,
+                email=email,
                 subject="Internship Offer Letter",
                 body=email_body,
-                from_email="your_email@gmail.com",
-                to=[email],
+                pdf=buffer.getvalue(),
+                send_at=send_time
             )
-            mail.attach("InternshipOfferLetter.pdf", buffer.getvalue(), "application/pdf")
-            mail.send()
 
-            return HttpResponse("Thank you! Your internship offer letter has been sent.")
+            return HttpResponse(
+                "Thank you! Your internship offer letter will be emailed to you shortly."
+            )
     else:
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
+
+
+@csrf_exempt
+def send_scheduled_emails(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    if request.headers.get("X-CRON-TOKEN") != os.environ.get("CRON_SECRET"):
+        return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    now = timezone.now()
+    due_emails = ScheduledEmail.objects.filter(sent=False, send_at__lte=now)
+
+    sent_count = 0
+    for email_obj in due_emails:
+        try:
+            mail = EmailMessage(
+                subject=email_obj.subject,
+                body=email_obj.body,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[email_obj.email],
+            )
+            mail.attach("InternshipOfferLetter.pdf", email_obj.pdf, "application/pdf")
+            mail.send(fail_silently=False)
+            email_obj.sent = True
+            email_obj.save()
+            sent_count += 1
+        except Exception:
+            pass
+
+    return JsonResponse({"status": "success", "emails_sent": sent_count})

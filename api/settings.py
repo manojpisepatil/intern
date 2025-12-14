@@ -78,14 +78,15 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # }
 import dj_database_url
 
-# ===================== DATABASE (Use Vercel + Neon Integration) =====================
+# ===================== DATABASE (Vercel + Neon Integration) =====================
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),  # Automatically set by Neon integration
-        conn_max_age=0,                          # Required for Vercel serverless
-        ssl_require=True,                        # Neon requires SSL
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=0,
+        ssl_require=True,
     )
 }
+
 # =================================================================================
 # ==================================================================================================
 

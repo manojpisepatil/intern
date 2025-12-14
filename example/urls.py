@@ -14,13 +14,23 @@
 # ]
 
 
+# from django.urls import path
+# from .views import index_view, contact_view, send_scheduled_emails, run_migrations
+
+# urlpatterns = [
+#     path('', index_view),
+#     path('contact/', contact_view),
+#     path('api/cron/send-emails/', send_scheduled_emails),
+#     path('run-migrations/', run_migrations),  # ← Temporary! Remove after use
+# ]
+
+
+
 from django.urls import path
-from .views import index_view, contact_view, send_scheduled_emails, run_migrations
+from .views import contact_view, send_scheduled_emails, run_migrations
 
 urlpatterns = [
-    path('', index_view),
-    path('contact/', contact_view),
+    path('contact/', contact_view, name='contact'),
     path('api/cron/send-emails/', send_scheduled_emails),
-    path('run-migrations/', run_migrations),  # ← Temporary! Remove after use
+    path('run-migrations/', run_migrations),  # DELETE AFTER USING ONCE
 ]
-

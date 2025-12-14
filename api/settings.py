@@ -14,7 +14,16 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# 🚫 BLOCK Vercel injected DB URLs
+os.environ.pop("DATABASE_URL", None)
+os.environ.pop("POSTGRES_URL", None)
+os.environ.pop("POSTGRES_PRISMA_URL", None)
+
 
 # === TEMPLATES: ONLY use root templates folder (ignores app folders) ===
 TEMPLATES = [
@@ -131,6 +140,7 @@ DATABASES = {
         },
     }
 }
+
 
 
 

@@ -1,4 +1,3 @@
-
 from django.urls import path
 from .views import index_view, contact_view, send_scheduled_emails
 

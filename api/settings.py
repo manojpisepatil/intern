@@ -124,13 +124,14 @@ DATABASES = {
         "NAME": "neondb",
         "USER": "neondb_owner",
         "PASSWORD": "npg_Li4kUbBVF6Ye",
-        "HOST": "ep-withered-pond-adouzkvu-pooler.c-2.us-east-1.aws.neon.tech",
+        "HOST": "ep-withered-pond-adouzkvu.c-2.us-east-1.aws.neon.tech",
         "PORT": "5432",
         "OPTIONS": {
             "sslmode": "require",
         },
     }
 }
+
 
 
 

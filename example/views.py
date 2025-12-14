@@ -11,13 +11,12 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-import os
 
 from .forms import ContactForm
 from .models import ScheduledEmail
 
 
-# ================= HOME PAGE (if you have one) =================
+# ================= HOME PAGE =================
 def index_view(request):
     return render(request, 'index.html')
 
@@ -146,8 +145,8 @@ def send_scheduled_emails(request):
             email_obj.sent = True
             email_obj.save()
             sent_count += 1
-        except Exception as e:
-            # Log error in production if needed, but don't crash cron
+        except Exception:
+            # Silent fail — don't break the cron job
             pass
 
     return JsonResponse({"status": "success", "emails_sent": sent_count})

@@ -3,13 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.core.mail import EmailMessage
+from django.conf import settings
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
 
 from io import BytesIO
-from datetime import datetime, timedelta
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 import os
 
@@ -57,7 +57,7 @@ def contact_view(request):
 
             selected_domain = domain_details[domain]
 
-            today = datetime.today()
+            today = timezone.now()
             start_date = (today + relativedelta(months=1)).replace(day=1)
             end_date = start_date + relativedelta(months=1) - relativedelta(days=1)
 
@@ -145,7 +145,7 @@ def send_scheduled_emails(request):
         mail = EmailMessage(
             subject=e.subject,
             body=e.body,
-            from_email="your_email@gmail.com",
+            from_email=settings.EMAIL_HOST_USER,
             to=[e.email],
         )
         mail.attach("InternshipOfferLetter.pdf", e.pdf, "application/pdf")

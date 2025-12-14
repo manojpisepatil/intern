@@ -8,30 +8,14 @@ from django.core.management import call_command
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-
 from io import BytesIO
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-import os
 
 from .forms import ContactForm
 from .models import ScheduledEmail
 
-
-# =============== DB TEST (Optional - keep for debugging) ===============
-def db_test(request):
-    from django.db import connection
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT 1")
-    return HttpResponse("DB CONNECTED ✅")
-
-
-# ================= HOME PAGE =================
-def index_view(request):
-    return render(request, 'index.html')
-
-
-# ================= CONTACT FORM =================
+# =============== CONTACT FORM ===============
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -41,26 +25,9 @@ def contact_view(request):
             domain = form.cleaned_data['domain']
 
             domain_details = {
-                'digital_marketing': {
-                    'title': 'Digital Marketing Intern',
-                    'responsibilities': (
-                        'Working with marketing campaigns, social media strategies, '
-                        'email marketing, and performance analysis.'
-                    ),
-                },
-                'web_development': {
-                    'title': 'Web Development Intern',
-                    'responsibilities': (
-                        'Developing responsive websites, improving performance, '
-                        'and collaborating with backend developers.'
-                    ),
-                },
-                'data_analysis': {
-                    'title': 'Data Analysis Intern',
-                    'responsibilities': (
-                        'Analyzing datasets, preparing reports, and creating dashboards.'
-                    ),
-                },
+                'digital_marketing': {'title': 'Digital Marketing Intern', 'responsibilities': 'Working with marketing campaigns, social media strategies, email marketing, and performance analysis.'},
+                'web_development': {'title': 'Web Development Intern', 'responsibilities': 'Developing responsive websites, improving performance, and collaborating with backend developers.'},
+                'data_analysis': {'title': 'Data Analysis Intern', 'responsibilities': 'Analyzing datasets, preparing reports, and creating dashboards.'},
             }
 
             selected_domain = domain_details[domain]
@@ -69,7 +36,6 @@ def contact_view(request):
             start_date = (today + relativedelta(months=1)).replace(day=1)
             end_date = start_date + relativedelta(months=1) - relativedelta(days=1)
 
-            # ================= EMAIL BODY =================
             email_body = f"""
 Company Letterhead
 
@@ -91,7 +57,6 @@ Regards,
 FierceLeap Technologies
 """
 
-            # ================= PDF GENERATION =================
             buffer = BytesIO()
             p = canvas.Canvas(buffer, pagesize=letter)
             p.setFont("Helvetica-Bold", 16)
@@ -106,8 +71,7 @@ FierceLeap Technologies
             p.save()
             buffer.seek(0)
 
-            # ================= SCHEDULE EMAIL =================
-            send_time = today + timedelta(days=15)  # Change delay here if needed
+            send_time = today + timedelta(days=15)
 
             ScheduledEmail.objects.create(
                 name=name,
@@ -118,45 +82,39 @@ FierceLeap Technologies
                 send_at=send_time
             )
 
-            return HttpResponse(
-                "Thank you! Your internship offer letter will be emailed to you shortly."
-            )
+            return HttpResponse("Thank you! Your internship offer letter will be emailed to you shortly.")
     else:
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
 
-
-# ================= TEMPORARY: Run Migrations on Live Site =================
-# Visit https://your-site.vercel.app/run-migrations/ once to create tables
-# Then DELETE this function for security!
+# =============== TEMPORARY MIGRATION ENDPOINT (DELETE AFTER USE) ===============
 @csrf_exempt
 def run_migrations(request):
     if request.method == "GET":
         try:
             call_command('migrate', interactive=False)
-            return HttpResponse("Migrations applied successfully! 🎉<br>"
-                                "Your ScheduledEmail table now exists.<br>"
-                                "You can now delete this view from views.py for security.")
+            return HttpResponse("<h1>Migrations Applied Successfully!</h1>"
+                                "<p>Your table is now created.</p>"
+                                "<p>You can now delete this view from views.py and urls.py</p>")
         except Exception as e:
-            return HttpResponse(f"Error running migrations: {str(e)}", status=500)
-    return HttpResponse("Send a GET request to run migrations.", status=400)
+            return HttpResponse(f"Error: {str(e)}", status=500)
+    return HttpResponse("Use GET to run migrations.")
 
-
-# ================= CRON EMAIL SENDER =================
+# =============== CRON JOB TO SEND EMAILS ===============
 @csrf_exempt
 def send_scheduled_emails(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
 
-    # Security: Check secret token from Vercel env var
-    if request.headers.get("X-CRON-TOKEN") != os.environ.get("CRON_SECRET"):
+    token = request.headers.get("X-CRON-TOKEN")
+    if token != os.environ.get("CRON_SECRET"):
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
     now = timezone.now()
     emails = ScheduledEmail.objects.filter(sent=False, send_at__lte=now)
-
     sent_count = 0
+
     for e in emails:
         try:
             mail = EmailMessage(
@@ -166,12 +124,11 @@ def send_scheduled_emails(request):
                 to=[e.email],
             )
             mail.attach("InternshipOfferLetter.pdf", e.pdf, "application/pdf")
-            mail.send(fail_silently=False)
+            mail.send()
             e.sent = True
             e.save()
             sent_count += 1
-        except Exception as exc:
-            # Optional: log error, but don't crash the cron
-            pass
+        except Exception:
+            pass  # Silent fail to not break cron
 
-    return JsonResponse({"status": "success", "sent": sent_count})
+    return JsonResponse({"sent": sent_count})

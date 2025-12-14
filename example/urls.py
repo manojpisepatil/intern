@@ -18,5 +18,6 @@ urlpatterns = [
     path('', index_view, name='index'),
     path('contact/', contact_view, name='contact'),
     path("send-scheduled-emails/", send_scheduled_emails),
+    path("db-test/", db_test),
 ]
 

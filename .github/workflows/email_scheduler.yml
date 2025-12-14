@@ -1,0 +1,16 @@
+name: Send Scheduled Emails
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # runs every hour (UTC)
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Django scheduled email sender
+        run: |
+          curl -X POST \
+          -H "X-CRON-TOKEN: ${{ secrets.CRON_SECRET }}" \
+          https://intern-beryl.vercel.app/send-scheduled-emails/

@@ -3,3 +3,4 @@ Django>=4.2.7
 reportlab
 python-dateutil
 Pillow  # needed for images in reportlab sometimes
+psycopg2-binary

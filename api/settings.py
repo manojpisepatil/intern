@@ -14,6 +14,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 
+import dj_database_url  # Make sure this is in your requirements.txt
+
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,20 +129,28 @@ WSGI_APPLICATION = 'api.wsgi.app'
 #     }
 # }
 
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "neondb",
-        "USER": "neondb_owner",
-        "PASSWORD": "npg_Li4kUbBVF6Ye",
-        "HOST": "ep-withered-pond-adouzkvu.c-2.us-east-1.aws.neon.tech",
-        "PORT": "5432",
-        "OPTIONS": {
-            "sslmode": "require",
-        },
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('postgresql://neondb_owner:npg_Li4kUbBVF6Ye@ep-withered-pond-adouzkuv.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'),  # Vercel will read this env var
+        conn_max_age=0,        # Critical for serverless (Vercel): close connection after each request
+        ssl_require=True,      # Forces SSL (Neon requires it)
+    )
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "neondb",
+#         "USER": "neondb_owner",
+#         "PASSWORD": "npg_Li4kUbBVF6Ye",
+#         "HOST": "ep-withered-pond-adouzkvu.c-2.us-east-1.aws.neon.tech",
+#         "PORT": "5432",
+#         "OPTIONS": {
+#             "sslmode": "require",
+#         },
+#     }
+# }
 
 
 

@@ -4,18 +4,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.core.management import call_command
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+
 from io import BytesIO
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+import os
 
 from .forms import ContactForm
 from .models import ScheduledEmail
 
-# =============== CONTACT FORM ===============
+
+# ================= HOME PAGE (if you have one) =================
+def index_view(request):
+    return render(request, 'index.html')
+
+
+# ================= CONTACT FORM =================
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -25,9 +32,26 @@ def contact_view(request):
             domain = form.cleaned_data['domain']
 
             domain_details = {
-                'digital_marketing': {'title': 'Digital Marketing Intern', 'responsibilities': 'Working with marketing campaigns, social media strategies, email marketing, and performance analysis.'},
-                'web_development': {'title': 'Web Development Intern', 'responsibilities': 'Developing responsive websites, improving performance, and collaborating with backend developers.'},
-                'data_analysis': {'title': 'Data Analysis Intern', 'responsibilities': 'Analyzing datasets, preparing reports, and creating dashboards.'},
+                'digital_marketing': {
+                    'title': 'Digital Marketing Intern',
+                    'responsibilities': (
+                        'Working with marketing campaigns, social media strategies, '
+                        'email marketing, and performance analysis.'
+                    ),
+                },
+                'web_development': {
+                    'title': 'Web Development Intern',
+                    'responsibilities': (
+                        'Developing responsive websites, improving performance, '
+                        'and collaborating with backend developers.'
+                    ),
+                },
+                'data_analysis': {
+                    'title': 'Data Analysis Intern',
+                    'responsibilities': (
+                        'Analyzing datasets, preparing reports, and creating dashboards.'
+                    ),
+                },
             }
 
             selected_domain = domain_details[domain]
@@ -36,6 +60,7 @@ def contact_view(request):
             start_date = (today + relativedelta(months=1)).replace(day=1)
             end_date = start_date + relativedelta(months=1) - relativedelta(days=1)
 
+            # ================= EMAIL BODY =================
             email_body = f"""
 Company Letterhead
 
@@ -57,6 +82,7 @@ Regards,
 FierceLeap Technologies
 """
 
+            # ================= PDF GENERATION =================
             buffer = BytesIO()
             p = canvas.Canvas(buffer, pagesize=letter)
             p.setFont("Helvetica-Bold", 16)
@@ -71,6 +97,7 @@ FierceLeap Technologies
             p.save()
             buffer.seek(0)
 
+            # ================= SCHEDULE EMAIL (15 days later) =================
             send_time = today + timedelta(days=15)
 
             ScheduledEmail.objects.create(
@@ -82,53 +109,45 @@ FierceLeap Technologies
                 send_at=send_time
             )
 
-            return HttpResponse("Thank you! Your internship offer letter will be emailed to you shortly.")
+            return HttpResponse(
+                "Thank you! Your internship offer letter will be emailed to you shortly."
+            )
     else:
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
 
-# =============== TEMPORARY MIGRATION ENDPOINT (DELETE AFTER USE) ===============
-@csrf_exempt
-def run_migrations(request):
-    if request.method == "GET":
-        try:
-            call_command('migrate', interactive=False)
-            return HttpResponse("<h1>Migrations Applied Successfully!</h1>"
-                                "<p>Your table is now created.</p>"
-                                "<p>You can now delete this view from views.py and urls.py</p>")
-        except Exception as e:
-            return HttpResponse(f"Error: {str(e)}", status=500)
-    return HttpResponse("Use GET to run migrations.")
 
-# =============== CRON JOB TO SEND EMAILS ===============
+# ================= CRON: SEND SCHEDULED EMAILS =================
 @csrf_exempt
 def send_scheduled_emails(request):
     if request.method != "POST":
-        return JsonResponse({"error": "Invalid method"}, status=405)
+        return JsonResponse({"error": "Method not allowed"}, status=405)
 
-    token = request.headers.get("X-CRON-TOKEN")
-    if token != os.environ.get("CRON_SECRET"):
+    # Secure token check
+    if request.headers.get("X-CRON-TOKEN") != os.environ.get("CRON_SECRET"):
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
     now = timezone.now()
-    emails = ScheduledEmail.objects.filter(sent=False, send_at__lte=now)
-    sent_count = 0
+    due_emails = ScheduledEmail.objects.filter(sent=False, send_at__lte=now)
 
-    for e in emails:
+    sent_count = 0
+    for email_obj in due_emails:
         try:
             mail = EmailMessage(
-                subject=e.subject,
-                body=e.body,
+                subject=email_obj.subject,
+                body=email_obj.body,
                 from_email=settings.EMAIL_HOST_USER,
-                to=[e.email],
+                to=[email_obj.email],
             )
-            mail.attach("InternshipOfferLetter.pdf", e.pdf, "application/pdf")
-            mail.send()
-            e.sent = True
-            e.save()
-            sent_count += 1
-        except Exception:
-            pass  # Silent fail to not break cron
+            mail.attach("InternshipOfferLetter.pdf", email_obj.pdf, "application/pdf")
+            mail.send(fail_silently=False)
 
-    return JsonResponse({"sent": sent_count})
+            email_obj.sent = True
+            email_obj.save()
+            sent_count += 1
+        except Exception as e:
+            # Log error in production if needed, but don't crash cron
+            pass
+
+    return JsonResponse({"status": "success", "emails_sent": sent_count})

@@ -3,14 +3,7 @@
   "builds": [
     {
       "src": "api/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "static/**/*",
-      "use": "@vercel/static"
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -21,6 +14,12 @@
     {
       "src": "/(.*)",
       "dest": "api/wsgi.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/send-emails/",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

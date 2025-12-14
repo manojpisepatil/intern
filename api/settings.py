@@ -61,21 +61,7 @@ WSGI_APPLICATION = 'api.wsgi.app'
 
 
 # ===================== DATABASE (STATIC - Hard-coded for Neon) =====================
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'neondb',
-#         'USER': 'neondb_owner',
-#         'PASSWORD': 'npg_Li4kUbBVF6Ye',  # From your Neon console and psql command
-#         'HOST': 'ep-withered-pond-adouzkvu.c-2.us-east-1.aws.neon.tech',
-#         'PORT': '5432',
-#         'OPTIONS': {
-#             'sslmode': 'require',
-#             'channel_binding': 'require',  # Critical addition from your psql command
-#         },
-#         'CONN_MAX_AGE': 0,  # Required for Vercel serverless functions
-#     }
-# }
+
 import dj_database_url
 
 # ===================== DATABASE (Vercel + Neon Integration) =====================

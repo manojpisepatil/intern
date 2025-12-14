@@ -121,13 +121,17 @@ WSGI_APPLICATION = 'api.wsgi.app'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
+        "NAME": "neondb",
+        "USER": "neondb_owner",
+        "PASSWORD": "npg_fJaTBD7I8sS",
+        "HOST": "ep-withered-pond-adouzkvu-pooler.c-2.us-east-1.aws.neon.tech",
         "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
     }
 }
+
 
 
 

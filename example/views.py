@@ -150,3 +150,14 @@ def send_scheduled_emails(request):
             pass
 
     return JsonResponse({"status": "success", "emails_sent": sent_count})
+
+
+
+
+# TEMPORARY - DELETE AFTER USE
+@csrf_exempt
+def run_migrations(request):
+    if request.method == "GET":
+        from django.core.management import call_command
+        call_command('migrate', interactive=False)
+        return HttpResponse("Migrations re-applied! Table created. Now delete this function.")

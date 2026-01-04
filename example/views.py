@@ -17,9 +17,11 @@ from .forms import ContactForm
 from .models import ScheduledEmail
 
 
+# def index_view(request):
+#     # Simple homepage render
+#     return render(request, "HOME IS WORKING")
 def index_view(request):
-    # Simple homepage render
-    return render(request, "HOME IS WORKING")
+    return HttpResponse("HOME IS WORKING")
 
 
 def contact_view(request):

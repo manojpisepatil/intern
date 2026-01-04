@@ -17,7 +17,7 @@ from .models import ScheduledEmail
 
 
 def index_view(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'form': form})
 
 
 def contact_view(request):

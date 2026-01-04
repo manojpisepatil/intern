@@ -19,7 +19,7 @@ from .models import ScheduledEmail
 
 def index_view(request):
     # Simple homepage render
-    return render(request, 'index.html')
+    return render(request, "HOME IS WORKING")
 
 
 def contact_view(request):

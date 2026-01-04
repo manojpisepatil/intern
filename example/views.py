@@ -17,9 +17,18 @@ from .forms import ContactForm
 from .models import ScheduledEmail
 
 
-# def index_view(request):
-#     # Simple homepage render
-#     return render(request, "HOME IS WORKING")
+def clear_cache(request):
+    deleted = 0
+    for root, dirs, files in os.walk("."):
+        for f in files:
+            if f.endswith(".pyc"):
+                try:
+                    os.remove(os.path.join(root, f))
+                    deleted += 1
+                except:
+                    pass
+    return HttpResponse(f"Cleared {deleted} cache files")
+    
 def index_view(request):
     return HttpResponse("HOME IS WORKING")
 

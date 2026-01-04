@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django.conf import settings
+import os
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -17,12 +18,14 @@ from .models import ScheduledEmail
 
 
 def index_view(request):
-    return render(request, 'index.html', {'form': form})
+    # Simple homepage render
+    return render(request, 'index.html')
 
 
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
+
         if form.is_valid():
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
@@ -70,6 +73,7 @@ Regards,
 FierceLeap Technologies
 """
 
+            # Generate PDF
             buffer = BytesIO()
             p = canvas.Canvas(buffer, pagesize=letter)
             p.setFont("Helvetica-Bold", 16)
@@ -84,6 +88,7 @@ FierceLeap Technologies
             p.save()
             buffer.seek(0)
 
+            # Email send time = 15 days later
             send_time = today + timedelta(days=15)
 
             ScheduledEmail.objects.create(
@@ -98,6 +103,7 @@ FierceLeap Technologies
             return HttpResponse(
                 "Thank you! Your internship offer letter will be emailed to you shortly."
             )
+
     else:
         form = ContactForm()
 
@@ -106,9 +112,12 @@ FierceLeap Technologies
 
 @csrf_exempt
 def send_scheduled_emails(request):
-    if request.method != "POST":
+
+    # Allow GET + POST (Vercel cron uses GET)
+    if request.method not in ["GET", "POST"]:
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
+    # Optional cron security
     if request.headers.get("X-CRON-TOKEN") != os.environ.get("CRON_SECRET"):
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
@@ -116,6 +125,7 @@ def send_scheduled_emails(request):
     due_emails = ScheduledEmail.objects.filter(sent=False, send_at__lte=now)
 
     sent_count = 0
+
     for email_obj in due_emails:
         try:
             mail = EmailMessage(
@@ -124,11 +134,20 @@ def send_scheduled_emails(request):
                 from_email=settings.EMAIL_HOST_USER,
                 to=[email_obj.email],
             )
-            mail.attach("InternshipOfferLetter.pdf", email_obj.pdf, "application/pdf")
+
+            mail.attach(
+                "InternshipOfferLetter.pdf",
+                email_obj.pdf,
+                "application/pdf"
+            )
+
             mail.send(fail_silently=False)
+
             email_obj.sent = True
             email_obj.save()
+
             sent_count += 1
+
         except Exception:
             pass
 
